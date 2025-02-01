@@ -3,15 +3,51 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/mail"
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/net/websocket"
 )
 
 const minUserNameLength int = 3
+
+type Server struct {
+	listenAddr string
+}
+
+func (s *Server) HandleWebSocket(ws *websocket.Conn) {
+	log.Printf("New incoming websocket connection %s", ws.RemoteAddr())
+
+	// remember to add mutex
+	// s.ws[conn] = ws.RemoteAddr()
+	s.readFromWs(ws)
+}
+func (s *Server) readFromWs(ws *websocket.Conn) {
+	buff := make([]byte, 1024)
+	for {
+		n, err := ws.Read(buff)
+		if err != nil {
+			if err == io.EOF {
+				// means conn on other side close itself
+				break
+			}
+			log.Println("read error: ", err)
+			continue
+		}
+		msg := buff[:n]
+		log.Println("msg received: ", string(msg))
+		ws.Write([]byte("Thank you for the message!"))
+
+	}
+}
+
+func NewServer() *Server {
+	return &Server{}
+}
 
 type User struct {
 	Id        uuid.UUID
@@ -92,6 +128,7 @@ type UserRegisterRequest struct {
 
 func (r *UserRegisterRequest) validate() map[string]string {
 	var errors = map[string]string{}
+	// enforce some kind of password
 	if r.Password != r.PasswordConfirm {
 		errors["password"] = "password and password confirm doesn't match"
 	}
@@ -112,7 +149,28 @@ func (r *UserRegisterRequest) validate() map[string]string {
 
 }
 
-// ctrl + d | ctrl + u scrolling
+type UserLoginRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// return erros or user indetifier email or username
+func (r *UserLoginRequest) validate() (rrors map[string]string) {
+	var errors map[string]string
+	if len(r.Username) == 0 && len(r.Email) == 0 {
+		errors["user"] = "username or passowrd must be provided"
+	}
+	if len(r.Username) < minUserNameLength {
+		errors["username"] = "username minimum length equals 3"
+	}
+	_, err := mail.ParseAddress(r.Email)
+	if err != nil {
+		errors["email"] = "invalid email"
+	}
+	return errors
+}
+
 type ApiError struct {
 	Status int         `json:"status"`
 	Msg    interface{} `json:"msg"`
@@ -128,13 +186,17 @@ func (e ApiError) Error() string {
 }
 
 func main() {
+	s := NewServer()
 	const listenAddr string = ":3000"
 
 	router := http.NewServeMux()
 
+	router.Handle("/ws", websocket.Handler(s.HandleWebSocket))
+
 	user := NewUserHandlers()
 
 	router.HandleFunc("POST /register", handler(user.handleRegister))
+	router.HandleFunc("POST /login", handler(user.handleLogin))
 
 	log.Printf("Listening on %s\n", listenAddr)
 
@@ -152,6 +214,10 @@ func NewUserHandlers() *UserHandlers {
 	}
 }
 
+func (h *UserHandlers) handleLogin(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
+
 func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) error {
 	ur := new(UserRegisterRequest)
 	defer r.Body.Close()
@@ -161,7 +227,7 @@ func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) er
 			Msg:    "Wrong register payload",
 		}
 	}
-	log.Printf("register user request: %+v error", r)
+
 	if errors := ur.validate(); len(errors) > 0 {
 		log.Printf("errors occured: %+v\n", errors)
 		return ApiError{
