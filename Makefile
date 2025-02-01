@@ -3,3 +3,7 @@ build:
 
 run: build
 	@./bin/api
+
+
+test:
+	go test
