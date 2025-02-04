@@ -70,7 +70,7 @@ func (r *RedisDataStore[Entity]) Get(id uuid.UUID) (*Entity, error) {
 
 func (r *RedisDataStore[Entity]) Create(e *Entity) (*Entity, error) {
 
-	if err := r.client.HSet(context.Background(), "", map[string]interface{}{}).Err(); err != nil {
+	if err := r.c.HSet(context.Background(), "", map[string]interface{}{}).Err(); err != nil {
 		return nil, err
 	}
 
