@@ -92,5 +92,4 @@ func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) er
 		Msg:    fmt.Sprintf("User %s has been successfully created activation email has been sent to %s", e.Username, e.Email),
 	})
 	return nil
-
 }
