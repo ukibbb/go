@@ -53,7 +53,7 @@ type RedisDataStore[T Entity] struct {
 	c *redis.Client
 }
 
-func NewRedisStorage[T Entity](opts *redis.Options) *RedisDataStore[T] {
+func NewRedisDataStore[T Entity](opts *redis.Options) *RedisDataStore[T] {
 	return &RedisDataStore[T]{
 		h: NewRedisHelpers(),
 		c: redis.NewClient(opts),
