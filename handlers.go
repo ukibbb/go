@@ -42,7 +42,7 @@ type UserHandlers struct {
 	r *Repository[User]
 }
 
-func NewUserHandlers(db Storage[User]) *UserHandlers {
+func NewUserHandlers(db DataStore[User]) *UserHandlers {
 	return &UserHandlers{
 		r: NewRepository[User](db),
 	}
