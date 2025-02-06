@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/redis/go-redis/v9"
 	"golang.org/x/net/websocket"
 )
 
@@ -46,19 +47,25 @@ func NewServer(listenAddr string) *Server {
 }
 
 func (s *Server) Start() {
-	// router := http.NewServeMux()
+	listenAddr := ":5000"
+	router := http.NewServeMux()
 
-	// router.Handle("/ws", websocket.Handler(s.HandleWebSocket))
+	router.Handle("/ws", websocket.Handler(s.HandleWebSocket))
 
-	// user := NewUserHandlers()
+	db := NewRedisDataStore[User](&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	user := NewUserHandlers(db)
 
-	// router.HandleFunc("POST /register", handler(user.handleRegister))
-	// router.HandleFunc("POST /login", handler(user.handleLogin))
+	router.HandleFunc("POST /register", handler(user.handleRegister))
+	router.HandleFunc("POST /login", handler(user.handleLogin))
+
 	// // onlyAdmin(handler(admin.handle))
 
-	// log.Printf("Listening on %s\n", listenAddr)
+	log.Printf("Listening on %s\n", listenAddr)
 
-	// http.ListenAndServe(listenAddr, router)
-	//
+	http.ListenAndServe(listenAddr, router)
 
 }
