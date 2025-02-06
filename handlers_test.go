@@ -11,7 +11,7 @@ import (
 )
 
 func TestRegisterHandler(t *testing.T) {
-	user := NewUserHandlers()
+	user := NewUserHandlers(NewInMemoryDataStore[User]())
 	req := UserRegisterRequest{
 		Username:        "ukasz",
 		Email:           "ukasz@bulinski.com",
@@ -72,7 +72,7 @@ func TestRegisterHandlerResponseRecorder(t *testing.T) {
 
 	req, err := http.NewRequest(http.MethodPost, "", reader)
 
-	user := NewUserHandlers()
+	user := NewUserHandlers(NewInMemoryDataStore[User]())
 
 	if err := user.handleRegister(rr, req); err != nil {
 	}
