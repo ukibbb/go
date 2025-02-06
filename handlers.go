@@ -39,12 +39,12 @@ func handler(fn ApiFunc) http.HandlerFunc {
 }
 
 type UserHandlers struct {
-	r *Repository[User]
+	ds DataStore[User]
 }
 
-func NewUserHandlers(db DataStore[User]) *UserHandlers {
+func NewUserHandlers(ds DataStore[User]) *UserHandlers {
 	return &UserHandlers{
-		r: NewRepository[User](db),
+		ds: ds,
 	}
 }
 
@@ -79,7 +79,8 @@ func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) er
 		IsActive:  false,
 	}
 
-	e, err := h.r.Create(&user)
+	e, err := h.ds.Create(user)
+
 	if err != nil {
 		return ApiError{
 			Status: http.StatusInternalServerError,
