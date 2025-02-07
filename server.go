@@ -47,25 +47,24 @@ func NewServer(listenAddr string) *Server {
 }
 
 func (s *Server) Start() {
-	listenAddr := ":5000"
 	router := http.NewServeMux()
-
 	router.Handle("/ws", websocket.Handler(s.HandleWebSocket))
 
-	db := NewRedisDataStore[User](&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-	user := NewUserHandlers(db)
+	user := NewUserHandlers(
+		NewRedisDataStore[User](&redis.Options{
+			Addr:     "localhost:6379",
+			Password: "", // no password set
+			DB:       0,  // use default DB
+		}),
+	)
 
-	router.HandleFunc("POST /register", handler(user.handleRegister))
-	router.HandleFunc("POST /login", handler(user.handleLogin))
+	router.HandleFunc("POST /v1/register", handler(user.handleRegister))
+	router.HandleFunc("POST /v1/login", handler(user.handleLogin))
 
 	// // onlyAdmin(handler(admin.handle))
 
-	log.Printf("Listening on %s\n", listenAddr)
+	log.Printf("Listening on %s\n", s.listenAddr)
 
-	http.ListenAndServe(listenAddr, router)
+	http.ListenAndServe(s.listenAddr, router)
 
 }
