@@ -80,11 +80,11 @@ func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) er
 	}
 
 	user := User{
-		Id:        uuid.New().String(),
+		Id:        uuid.New(),
 		Username:  ur.Username,
 		Email:     ur.Email,
 		Password:  ur.Password,
-		CreatedAt: time.Now().String(),
+		CreatedAt: time.Now(),
 		IsActive:  false,
 	}
 

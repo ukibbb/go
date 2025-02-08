@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -11,13 +12,13 @@ type Storable interface {
 }
 
 type User struct {
-	Id        string `json:"id" redis:"Id"`
-	Username  string `json:"username" redis:"Username"`
-	Email     string `json:"email" redis:"Email"`
-	Password  string `json:"password" redis:"Password"`
-	CreatedAt string `json:"createdAt" redis:"CreatedAt"`
-	IsActive  bool   `json:"isActive" redis:"IsActive"`
-	Role      string `json:"role" redis:"Role"`
+	Id        uuid.UUID `json:"id" redis:"Id"`
+	Username  string    `json:"username" redis:"Username"`
+	Email     string    `json:"email" redis:"Email"`
+	Password  string    `json:"password" redis:"Password"`
+	CreatedAt time.Time `json:"createdAt" redis:"CreatedAt"`
+	IsActive  bool      `json:"isActive" redis:"IsActive"`
+	Role      string    `json:"role" redis:"Role"`
 }
 
 func (u User) GetKeyForRedis() string {
