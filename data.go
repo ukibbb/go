@@ -12,13 +12,13 @@ type Storable interface {
 }
 
 type User struct {
-	Id        uuid.UUID
-	Username  string
-	Email     string
-	Password  string
-	CreatedAt time.Time
-	IsActive  bool
-	Role      string
+	Id        uuid.UUID `json:"id" redis:"Id"`
+	Username  string    `json:"username" redis:"Username"`
+	Email     string    `json:"email" redis:"Email"`
+	Password  string    `json:"password" redis:"Password"`
+	CreatedAt time.Time `json:"createdAt" redis:"CreatedAt"`
+	IsActive  bool      `json:"isActive" redis:"IsActive"`
+	Role      string    `json:"role" redis:"Role"`
 }
 
 func (u User) GetKeyForRedis() string {

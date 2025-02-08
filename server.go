@@ -52,7 +52,7 @@ func (s *Server) Start() {
 
 	user := NewUserHandlers(
 		NewRedisDataStore[User](&redis.Options{
-			Addr:     "localhost:6379",
+			Addr:     "localhost:5000",
 			Password: "", // no password set
 			DB:       0,  // use default DB
 		}),
@@ -60,6 +60,8 @@ func (s *Server) Start() {
 
 	router.HandleFunc("POST /v1/register", handler(user.handleRegister))
 	router.HandleFunc("POST /v1/login", handler(user.handleLogin))
+
+	router.HandleFunc("GET /v1/users", handler(user.handleGetUsers))
 
 	// // onlyAdmin(handler(admin.handle))
 

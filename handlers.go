@@ -28,6 +28,9 @@ type ApiFunc func(w http.ResponseWriter, r *http.Request) error
 
 func handler(fn ApiFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") // Allow all domains
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		if err := fn(w, r); err != nil {
 			if e, ok := err.(ApiError); ok {
 				w.WriteHeader(e.Status)
@@ -50,6 +53,12 @@ func NewUserHandlers(ds DataStore[User]) *UserHandlers {
 
 func (h *UserHandlers) handleLogin(w http.ResponseWriter, r *http.Request) error {
 	return nil
+}
+
+func (h *UserHandlers) handleGetUsers(w http.ResponseWriter, r *http.Request) error {
+	h.ds.GetAll()
+	return nil
+
 }
 
 func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) error {
@@ -87,6 +96,7 @@ func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) er
 			Msg:    err.Error(),
 		}
 	}
+	log.Printf("User %s has been successfully created activation email has been sent to %s", e.Username, e.Email)
 	w.WriteHeader(201)
 	json.NewEncoder(w).Encode(ApiResponse{
 		Status: http.StatusCreated,
