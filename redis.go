@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 )
 
@@ -24,5 +25,24 @@ func (h *RedisHelpers[T]) CreateValues(e T) (map[string]interface{}, error) {
 	}
 
 	return values, nil
+}
+
+func (*RedisHelpers[T]) RetrieveValues(values map[string]string) (T, error) {
+	var e T
+
+	t := reflect.TypeOf(e)
+	if t.Kind() != reflect.Struct {
+		return e, errors.New("type in retrive values is not struct")
+	}
+
+	fv := reflect.ValueOf(&e).Elem()
+
+	for k, v := range values {
+		f := fv.FieldByName(k)
+		fmt.Println("fv:", fv, "f:", f, "k:", k, "v:", v)
+
+	}
+
+	return e, nil
 
 }
