@@ -11,7 +11,7 @@ import (
 // Contains actual logic needed to retrive data from storage.
 type DataStore[T Storable] interface {
 	Get(id string) (T, error)
-	GetAll() error
+	GetAll() (T, error)
 	Create(T) (T, error)
 	Update(T) (T, error)
 	Delete(id uuid.UUID) (T, error)
@@ -29,29 +29,24 @@ func NewRedisDataStore[T Storable](opts *redis.Options) *RedisDataStore[T] {
 	}
 }
 
-func (r *RedisDataStore[T]) GetAll() error {
+func (r *RedisDataStore[T]) GetAll() (T, error) {
 	var cursor uint64
+
 	batch, cursor, err := r.c.Scan(
 		context.Background(),
 		cursor, "user:*",
 		10).Result()
 
-	if err != nil {
-		return err
-	}
+	re, err := r.c.HGetAll(context.Background(), batch[0]).Result()
 
-	var user User
-
-	err = r.c.HGetAll(context.Background(), batch[0]).Scan(&user)
+	e, err := r.h.RetrieveValues(re)
 
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return e, err
 	}
 
-	fmt.Println("re", user)
-
-	return nil
+	return e, nil
 }
 
 func (r *RedisDataStore[T]) Get(key string) (e T, err error) {
