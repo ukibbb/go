@@ -10,7 +10,7 @@ import (
 
 // Contains actual logic needed to retrive data from storage.
 type DataStore[T Storable] interface {
-	Get(id string) (T, error)
+	Get(id uuid.UUID) (T, error)
 	GetAll() (T, error)
 	Create(T) (T, error)
 	Update(T) (T, error)
@@ -49,7 +49,7 @@ func (r *RedisDataStore[T]) GetAll() (T, error) {
 	return e, nil
 }
 
-func (r *RedisDataStore[T]) Get(key string) (e T, err error) {
+func (r *RedisDataStore[T]) Get(key uuid.UUID) (e T, err error) {
 	return e, err
 }
 
