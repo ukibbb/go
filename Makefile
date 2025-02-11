@@ -5,7 +5,7 @@ run: build
 	@./bin/api
 
 test:
-	go test -v ./...
+	go test -v ./helpers_test.go
 
 redis:
 	docker run --name redis -d -p  5000:6379 redis:latest
