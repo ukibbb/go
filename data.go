@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -16,7 +15,7 @@ type User struct {
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt string    `json:"createdAt"`
 	IsActive  bool      `json:"isActive"`
 	Role      string    `json:"role"`
 }
