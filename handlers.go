@@ -62,7 +62,7 @@ func (h *UserHandlers) handleGetUsers(w http.ResponseWriter, r *http.Request) er
 	}
 	json.NewEncoder(w).Encode(ApiResponse{
 		Status: http.StatusOK,
-		Msg: map[string]User{
+		Msg: map[string][]User{
 			"users": users,
 		},
 	})
