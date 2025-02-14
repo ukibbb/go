@@ -32,8 +32,6 @@ func (r *RedisDataStore[T]) GetAll() (T, error) {
 
 	e, err := r.h.RetriveStruct(re)
 
-	fmt.Println(e, "eeee")
-
 	if err != nil {
 		fmt.Println(err)
 		return e, err
