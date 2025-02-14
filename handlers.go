@@ -56,15 +56,13 @@ func (h *UserHandlers) handleLogin(w http.ResponseWriter, r *http.Request) error
 }
 
 func (h *UserHandlers) handleGetUsers(w http.ResponseWriter, r *http.Request) error {
-	users, err := h.ds.GetAll()
+	_, err := h.ds.GetAll()
 	if err != nil {
 		return ApiError{}
 	}
 	json.NewEncoder(w).Encode(ApiResponse{
 		Status: http.StatusOK,
-		Msg: map[string][]User{
-			"users": users,
-		},
+		Msg:    map[string][]User{},
 	})
 	return nil
 
