@@ -56,13 +56,13 @@ func (h *UserHandlers) handleLogin(w http.ResponseWriter, r *http.Request) error
 }
 
 func (h *UserHandlers) handleGetUsers(w http.ResponseWriter, r *http.Request) error {
-	_, err := h.ds.GetAll()
+	users, err := h.ds.GetAll()
 	if err != nil {
 		return ApiError{}
 	}
 	json.NewEncoder(w).Encode(ApiResponse{
 		Status: http.StatusOK,
-		Msg:    map[string][]User{},
+		Msg:    users,
 	})
 	return nil
 
@@ -87,11 +87,11 @@ func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) er
 	}
 
 	user := User{
-		Id:        uuid.New(),
+		Id:        uuid.NewString(),
 		Username:  ur.Username,
 		Email:     ur.Email,
 		Password:  ur.Password,
-		CreatedAt: time.Now().Local().Format(time.RFC3339),
+		CreatedAt: time.Now().Local().Format("2006-01-02:15:04:05"),
 		IsActive:  false,
 	}
 

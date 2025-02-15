@@ -41,7 +41,7 @@ func (r *UserRegisterRequest) validate() map[string]string {
 }
 
 // return erros or user indetifier email or username
-func (r *UserLoginRequest) validate() (rrors map[string]string) {
+func (r *UserLoginRequest) validate() map[string]string {
 	var errors map[string]string
 	if len(r.Username) == 0 && len(r.Email) == 0 {
 		errors["user"] = "username or passowrd must be provided"
