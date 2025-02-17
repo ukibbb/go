@@ -68,7 +68,6 @@ func (r *RedisDataStore[T]) Create(e T) (T, error) {
 	if err := r.c.HSet(context.Background(), id, e).Err(); err != nil {
 		return s, err
 	}
-
 	return e, nil
 }
 
