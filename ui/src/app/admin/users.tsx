@@ -1,8 +1,55 @@
 "use client";
+import React from "react";
 import { User } from "./page";
+import { Input } from "@/components/ui/input";
+import {
+    Table,
+    TableRow,
+    TableCell,
+    TableHead,
+    TableBody,
+    TableHeader,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
-export default function UserTable(users: User[]) {
-    const [search, setSearch] = useState("");
+import { ColumnDef } from "@tanstack/react-table";
+
+const columns: ColumnDef<User>[] = [
+    {
+        accessorKey: "id",
+        header: "ID",
+    },
+    {
+        accessorKey: "email",
+        header: "Email",
+    },
+    {
+        accessorKey: "username",
+        header: "Username",
+    },
+    {
+        accessorKey: "isActive",
+        header: "Status",
+        cell: ({ row }) => (row.original.isActive ? "Active" : "Inactive"),
+    },
+    {
+        accessorKey: "role",
+        header: "Role",
+    },
+    {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => <Button variant="outline">Edit</Button>,
+    },
+];
+
+interface UserTableProps {
+    users: User[];
+}
+
+export default function UserTable(props: UserTableProps) {
+    const { users } = props;
+    const [search, setSearch] = React.useState("");
     const filteredUsers = users.filter(
         (user) =>
             user.email.includes(search) ||
