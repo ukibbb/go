@@ -59,7 +59,7 @@ func (s *Server) Start() {
 	)
 
 	router.HandleFunc("POST /v1/register", handler(user.handleRegister))
-	router.HandleFunc("POST /v1/login", handler(user.handleLogin))
+	//	router.HandleFunc("POST /v1/login", handler(user.handleLogin))
 	router.HandleFunc("GET /v1/users", handler(user.handleGetUsers))
 
 	// onlyAdmin(handler(admin.handle))
