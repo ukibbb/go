@@ -12,16 +12,16 @@ import (
 
 type ApiError struct {
 	Status int         `json:"status"`
-	Msg    interface{} `json:"msg"`
+	Data   interface{} `json:"data"`
 }
 
 type ApiResponse struct {
 	Status int         `json:"status"`
-	Msg    interface{} `json:"msg"`
+	Data   interface{} `json:"data"`
 }
 
 func (e ApiError) Error() string {
-	return fmt.Sprintf("error: %s status code: %d\n", e.Msg, e.Status)
+	return fmt.Sprintf("error: %s status code: %d\n", e.Data, e.Status)
 }
 
 type ApiFunc func(w http.ResponseWriter, r *http.Request) error
@@ -51,10 +51,6 @@ func NewUserHandlers(ds DataStore[User]) *UserHandlers {
 	}
 }
 
-func (h *UserHandlers) handleLogin(w http.ResponseWriter, r *http.Request) error {
-	return nil
-}
-
 func (h *UserHandlers) handleGetUsers(w http.ResponseWriter, r *http.Request) error {
 	users, err := h.ds.GetAll()
 	if err != nil {
@@ -62,7 +58,7 @@ func (h *UserHandlers) handleGetUsers(w http.ResponseWriter, r *http.Request) er
 	}
 	json.NewEncoder(w).Encode(ApiResponse{
 		Status: http.StatusOK,
-		Msg:    users,
+		Data:   users,
 	})
 	return nil
 
@@ -74,7 +70,7 @@ func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) er
 	if err := json.NewDecoder(r.Body).Decode(ur); err != nil {
 		return ApiError{
 			Status: http.StatusBadRequest,
-			Msg:    "Wrong register payload",
+			Data:   "Wrong register payload",
 		}
 	}
 
@@ -82,7 +78,7 @@ func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) er
 		log.Printf("errors occured: %+v\n", errors)
 		return ApiError{
 			Status: http.StatusUnprocessableEntity,
-			Msg:    errors,
+			Data:   errors,
 		}
 	}
 
@@ -100,14 +96,14 @@ func (h *UserHandlers) handleRegister(w http.ResponseWriter, r *http.Request) er
 	if err != nil {
 		return ApiError{
 			Status: http.StatusInternalServerError,
-			Msg:    err.Error(),
+			Data:   err.Error(),
 		}
 	}
 	log.Printf("User %s has been successfully created activation email has been sent to %s", e.Username, e.Email)
 	w.WriteHeader(201)
 	json.NewEncoder(w).Encode(ApiResponse{
 		Status: http.StatusCreated,
-		Msg:    fmt.Sprintf("User %s has been successfully created activation email has been sent to %s", e.Username, e.Email),
+		Data:   fmt.Sprintf("User %s has been successfully created activation email has been sent to %s", e.Username, e.Email),
 	})
 	return nil
 }
