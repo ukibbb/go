@@ -1,4 +1,4 @@
-import { UsersTable } from "./users";
+import UserTable from "./users";
 
 export type User = {
     id: string;
@@ -10,5 +10,5 @@ export type User = {
 export default async function Admin() {
     const response = await fetch("http://localhost:8000/v1/users");
     const users: { status: number; msg: User[] } = await response.json();
-    return <UsersTable users={users.msg} />;
+    return <UserTable users={users.msg} />;
 }
