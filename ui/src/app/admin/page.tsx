@@ -9,6 +9,10 @@ export type User = {
 };
 export default async function Admin() {
     const response = await fetch("http://localhost:8000/v1/users");
-    const users: { status: number; msg: User[] } = await response.json();
-    return <UserTable users={users.msg} />;
+    const { status, data }: { status: number; data: User[] } =
+        await response.json();
+    if (status !== 200) {
+        return <div>Error: kurwo {status}</div>;
+    }
+    return <UserTable users={data} />;
 }
