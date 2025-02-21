@@ -12,7 +12,7 @@ export default async function Admin() {
     const { status, data }: { status: number; data: User[] } =
         await response.json();
     if (status !== 200) {
-        return <div>Error: kurwo {status}</div>;
+        return <div>Error: {status}</div>;
     }
     return <UserTable users={data} />;
 }
